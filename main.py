@@ -1,5 +1,5 @@
 from indeed_scraper import create_company_info
-from testing import create_cv_from_list
+from create_cv import create_cv_from_list
 
 if __name__ == '__main__':
 
