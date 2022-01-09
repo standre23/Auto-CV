@@ -99,18 +99,4 @@ if __name__ == "__main__":
     create_cv_from_list(companies)
 
 
-        # pdf = FPDF()
-
-        # # insert the texts in pdf
-        # for x in newFile:
-        #     pdf.cell(200, 10, txt = x, ln = 1, align = 'C')
-
-        # # save the pdf with name .pdf
-        # pdf.output("mygfg.pdf")
-
-
-    # closing text file
-    #
-
-
 
