@@ -1,5 +1,5 @@
 # Auto-CV
-hackathon
-Download CoverLetterCreator.py, CoverLetterDemo.txt and indeed_scraper.py and place them in the same directory
-Open directory in IDE
-Run CoverLetterCreator.py
+
+1. Download CoverLetterCreator.py, CoverLetterDemo.txt and indeed_scraper.py and place them in the same directory
+2. Open directory in IDE
+3. Run CoverLetterCreator.py
