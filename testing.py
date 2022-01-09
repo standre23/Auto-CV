@@ -1,3 +1,5 @@
+import re
+from fpdf import FPDF
 from indeed_scraper import create_company_info
 
 
@@ -9,11 +11,26 @@ for company in companies:
     Title = company[1]
     companyName = company[0]
     companyLocation = company[2]
-    flag = 0
+    InternFlag = 0
     index = 0
-    delimArray = ['\'' , '\"', '\\' , '|', '-' , '_', '‧']
+    keywords = ['Software', 'Developer', 'Mobile', 'Web']
+    delimArray = ['\'' , '\"', '\\' , '|', '-' , '_', '‧', '•']
 
-    newFile = open("CoverLetterDemoOutput_" + companyName, 'x+')
+
+    SplitList = re.split('; |, |- |\( |\) |/ |– ', Title)
+
+    for potential in SplitList:
+        for word in keywords:
+            if "Intern" in potential:
+                InternFlag = 1
+            if "intern" in potential:
+                InternFlag = 1
+            if word in potential:
+                Title = potential
+
+    Title = Title.replace("/", "")            
+
+    newFile = open("CoverLetterDemoOutput_" + companyName + Title, 'w+')
     with open("CoverLetterDemo.txt", 'r') as f:
         for line in f:
             line = line.rstrip()
@@ -22,23 +39,37 @@ for company in companies:
                 newFile.write(line)
             elif "companyName" in line:
                 line = line.replace("companyName", companyName)
-                newFile.write(line)
+                newFile.write(line + '\n')
             elif "companyLocation" in line:
                 line = line.replace("companyLocation", companyLocation)
-                newFile.write(line)
+                newFile.write(line + '\n')
             else:
                 newFile.write(line + '\n')
 
+    # pdf = FPDF()
+  
+    # # insert the texts in pdf
+    # for x in newFile:
+    #     pdf.cell(200, 10, txt = x, ln = 1, align = 'C')
+   
+    # # save the pdf with name .pdf
+    # pdf.output("mygfg.pdf")
 
 
 
-    print(Title)
 
-    print(companyName)
 
-    print(companyLocation)
 
-    # closing text file
-    #
-    f.close()
-    newFile.close()
+
+
+
+
+
+print(companyName)
+
+print(companyLocation)
+
+# closing text file 
+#   
+f.close()
+newFile.close()
