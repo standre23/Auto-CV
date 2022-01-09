@@ -1,20 +1,52 @@
 import re
-from fpdf import FPDF
 from indeed_scraper import create_company_info
 
 
-URL = "https://ca.indeed.com/jobs?q=software%20developer&l=Richmond%20Hill%2C%20ON&vjk=19e1a9fac332fc27"
-companies = create_company_info(URL)
 
-for company in companies:
-    # variables
-    Title = company[1]
-    companyName = company[0]
-    companyLocation = company[2]
+def parse_skills_file():
+    skillsFile = open("skills.txt", 'r')
+    skills = []
+    for line in skillsFile:
+        line = line.replace("\n", "")
+        skills.append(line.split("-"))
+
+    skillsFile.close()
+    return skills
+
+def choose_skills(job_summary, skills):
+    skill_value = []
+    max=0
+    for skill in skills:
+        count = 0
+        for keyword in skill[1].split():
+            count = count + job_summary.count(keyword)
+        if max < count:
+            max = count
+        skill_value.append((count, skill[0]))
+
+    selected_skills = []
+    max+=1
+    while len(selected_skills) <= 3 and max > 0:
+        max -= 1
+        for skill in skill_value:
+            if skill[0] == max:
+                selected_skills.append(skill[1])
+            if len(selected_skills) >= 3:
+                break
+
+    return selected_skills
+
+
+
+def create_cv(company, skills):
+    Title = company.get("title")
+    companyName = company.get("company")
+    companyLocation = company.get("location")
     InternFlag = 0
     index = 0
     keywords = ['Software', 'Developer', 'Mobile', 'Web']
-    delimArray = ['\'' , '\"', '\\' , '|', '-' , '_', '‧', '•']
+    delimArray = ['\'', '\"', '\\', '|', '-', '_', '‧', '•']
+
 
 
     SplitList = re.split('; |, |- |\( |\) |/ |– ', Title)
@@ -28,9 +60,9 @@ for company in companies:
             if word in potential:
                 Title = potential
 
-    Title = Title.replace("/", "")            
+    Title = Title.replace("/", "")
 
-    newFile = open("CoverLetterDemoOutput_" + companyName + Title, 'w+')
+    newFile = open("CoverLetterDemoOutput_" + companyName + Title + ".txt", 'w+')
     with open("CoverLetterDemo.txt", 'r') as f:
         for line in f:
             line = line.rstrip()
@@ -43,33 +75,42 @@ for company in companies:
             elif "companyLocation" in line:
                 line = line.replace("companyLocation", companyLocation)
                 newFile.write(line + '\n')
+            elif "place skills here" in line:
+                str = "\t-" + skills[0] + "\n\n\t-" + skills[1] + "\n\n\t-" + skills[2]
+                line = line.replace("place skills here", str)
+                newFile.write(line + '\n')
             else:
                 newFile.write(line + '\n')
 
-    # pdf = FPDF()
-  
-    # # insert the texts in pdf
-    # for x in newFile:
-    #     pdf.cell(200, 10, txt = x, ln = 1, align = 'C')
-   
-    # # save the pdf with name .pdf
-    # pdf.output("mygfg.pdf")
+    f.close()
+    newFile.close()
+
+def create_cv_from_list(companies):
+    for company in companies:
+        skills = parse_skills_file()
+        skills = choose_skills(company.get("summary"), skills)
+        create_cv(company, skills)
+
+
+if __name__ == "__main__":
+    URL = "https://ca.indeed.com/jobs?q=software%20developer&l=Richmond%20Hill%2C%20ON&vjk=19e1a9fac332fc27"
+    companies = create_company_info(URL)
+
+    create_cv_from_list(companies)
+
+
+        # pdf = FPDF()
+
+        # # insert the texts in pdf
+        # for x in newFile:
+        #     pdf.cell(200, 10, txt = x, ln = 1, align = 'C')
+
+        # # save the pdf with name .pdf
+        # pdf.output("mygfg.pdf")
+
+
+    # closing text file
+    #
 
 
 
-
-
-
-
-
-
-
-
-print(companyName)
-
-print(companyLocation)
-
-# closing text file 
-#   
-f.close()
-newFile.close()

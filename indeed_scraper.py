@@ -1,3 +1,4 @@
+import re
 import requests
 import bs4
 from bs4 import BeautifulSoup
@@ -25,6 +26,10 @@ def extract_company_location_from_div(div):
         locations = title.get_text()
     return locations
 
+#have to get vjk key
+#then open new url with soup
+#then find location of summary and snatch all text
+#for this to work effecciently need to get different parts of url to do things
 def get_summary(div):
     summary = []
     for thing in div.find_all('div', class_="job-snippet"):
@@ -56,15 +61,20 @@ def create_company_info(URL):
             job = extract_job_title_from_div(div)
             company_name = extract_company_name_from_div(div)
             location = extract_company_location_from_div(div)
-            summary = get_summary(div)
             # salary = extract_company_salary_from_div(div)
             if job != "" and company_name != "" and location != "":
-                company.append((company_name, job, location, summary))
+                summary = get_summary(div)
+                company.append({
+                    "title": job,
+                    "company": company_name,
+                    "location": location,
+                    "summary": summary
+                })
     return company
 
 
 if __name__ == "__main__":
-    URL = "https://ca.indeed.com/jobs?q=software%20developer&l=Richmond%20Hill%2C%20ON&vjk=9c06e74ec245e94a"
+    URL = "https://ca.indeed.com/jobs?q=software%20developer%20intern&l=Richmond%20Hill%2C%20ON&vjk=a4d8dda65bbd8b3d"
 
     company = create_company_info(URL)
 
